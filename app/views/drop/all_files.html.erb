@@ -1,0 +1,29 @@
+
+
+<h2>Options</h2>
+
+<p><%= link_to "Upload File", drop_new_upload_path %></p>
+<p><%= link_to "Download File", drop_new_download_path %></p>
+
+<h2>Raw JSON</h2>
+
+<%= @parsed_file_metadata.inspect %>
+
+<h2>Parsed JSON</h2>
+
+<p>Dropbox Root Path: <%= @parsed_file_metadata["path"] %></p>
+
+<% @parsed_file_metadata["contents"].each do |object| %> 
+	<p>is dir:  <%= object["is_dir"] %> </p>
+	<p>path:  <%= object["path"] %> </p>
+	<p>size: <%= object["size"]%></p>
+	<p>root: <%= object["root"]%></p>
+	<p>revision:  <%= object["revision"] %> </p>
+	<p>modified: <%= object["modified"]%></p>
+	<p>bytes: <%= object["bytes"]%></p>
+	<p>mime_type: <%= object["mime_type"]%></p>
+	<p>icon: <%= object["icon"]%></p>
+	<p>thumb_exists: <%= object["thumb_exists"]%></p>
+	<p>---------------------------</p>
+<% end %>
+

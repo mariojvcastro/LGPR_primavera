@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Lgp</title>
+  <%= stylesheet_link_tag    "application" %>
+  <%= javascript_include_tag "application" %>
+  <%= csrf_meta_tags %>
+</head>
+<body>
+	
+	<% if session[:dropbox_session] then %>
+		<h1>Logged in (<%= link_to "Logout", drop_unauthorize_path %>)</h1>
+	<% else %>
+		<h1>Not Logged in</h1>
+	<% end %>
+
+	<%= yield %>
+
+</body>
+</html>

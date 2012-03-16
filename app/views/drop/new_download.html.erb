@@ -1,0 +1,6 @@
+
+<h1>Files</h1>
+
+<% @parsed_file_metadata["contents"].each do |object| %> 
+	<p><%= link_to object["path"], drop_download_path(:file_name => object["path"]) %></p>
+<% end %>

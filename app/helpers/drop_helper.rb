@@ -1,0 +1,2 @@
+module DropHelper
+end

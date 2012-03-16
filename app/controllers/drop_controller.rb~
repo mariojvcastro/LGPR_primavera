@@ -1,0 +1,63 @@
+class DropController < ApplicationController
+  
+  # This references the Dropbox SDK gem install with "gem install dropbox-sdk"
+	require 'dropbox_sdk'
+  
+  APP_KEY = 'o1xfbfp7xpih038'
+	APP_SECRET = '8tmmv20y681jnie'
+	ACCESS_TYPE = :app_folder  #The two valid values here are :app_folder and :dropbox
+	
+=begin
+		@client = DropboxClient.new(@@session, ACCESS_TYPE)
+		puts "linked account:", @client.account_info().inspect
+  end
+=end
+	
+	# GET drop/authorize
+	def authorize
+    if not params[:oauth_token] then
+        dbsession = DropboxSession.new(APP_KEY, APP_SECRET)
+
+        session[:dropbox_session] = dbsession.serialize #serialize and save this DropboxSession
+
+        #pass to get_authorize_url a callback url that will return the user here
+        redirect_to dbsession.get_authorize_url url_for(:action => 'authorize')
+    else
+        # the user has returned from Dropbox
+        dbsession = DropboxSession.deserialize(session[:dropbox_session])
+        # This will fail if the user didn't visit the above URL and hit 'Allow'
+        dbsession.get_access_token  #we've been authorized, so now request an access_token
+        session[:dropbox_session] = dbsession.serialize
+
+        #redirect_to :action => 'upload'
+		end
+	end
+  
+  # GET drop/new
+	def new
+    # Check if user has no dropbox session...re-direct them to authorize
+    return redirect_to(:action => 'authorize') unless session[:dropbox_session]
+
+    dbsession = DropboxSession.deserialize(session[:dropbox_session])
+    client = DropboxClient.new(dbsession, ACCESS_TYPE) #raise an exception if session not authorized
+    info = client.account_info # look up account information
+
+    if request.method != "POST"
+        # show a file upload page
+        render :inline =>
+            "#{info['email']} <br/><%= form_tag({:action => :upload}, :multipart => true) do %><%= file_field_tag 'file' %><%= submit_tag %><% end %>"
+        return
+    else
+        # upload the posted file to dropbox keeping the same name
+        resp = client.put_file(params[:file].original_filename, params[:file].read)
+        render :text => "Upload successful! File now at #{resp['path']}"
+    end
+	end
+	
+	# POST drop/upload
+	def upload
+		
+	end
+	
+
+end
